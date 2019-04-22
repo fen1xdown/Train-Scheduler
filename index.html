@@ -16,7 +16,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 
-  <script src="./main.js"></script>
+  <!-- <script src="./main.js"></script> -->
 
   <style>
     #train-table th,
@@ -32,85 +32,84 @@
   <div class="container">
 
     <div class="jumbotron" style="background-color: black; color: white">
-      <h1 class="text-center">Train on Time</h1>
-      <h3 class="text-center">See when your next train is on its way</h3>
+      <h1 class="text-center">Train Times</h1>
+      <h3 class="text-center">Your train on time</h3>
     </div>
 
     <div class="col-xs-12 col-sm-6 col-md-8">
       <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">Current Train Schedule</h3>
-        </div><!-- /.panel-heading -->
+        </div>
         <div class="panel-body">
             <table class="table table-hover" id='train-table'>
                 <thead>
                   <tr>
                       <th>Train Name</th>
                       <th>Destination</th>
-                    <th>Frequency (min)</th>
+                      <th>Frequency (min)</th>
                       <th>Next Arrival</th>
-                    <th>Minutes Away</th>
+                      <th>Minutes Away</th>
                   </tr>
                 </thead>
               <tbody>
               </tbody>
             </table>
-        </div><!-- /.panel-body -->
-      </div><!-- /.panel panel-primary -->
-  </div><!-- /.grid -->
-</div><!-- /.row -->
-</div><!-- /.container-fluid -->
+        </div>
+      </div>
+  </div>
+</div>
+</div>
 
 <div class="panel-body">
   <form id="target">
     <div class="form-group">
           <label for="train-input">Train Name</label>
-          <input type="text" id="train-input" class="form-control" placeholder="Enter up to 25 letters or numbers." pattern="[a-zA-Z0-9\s]{3,25}" required />
-        </div><!-- /.form-group -->
+          <input type="text" id="train-input" class="form-control" placeholder="Enter up to 25 letters or numbers." required />
+        </div>
         <div class="form-group">
           <label for="destination-input">Destination</label>
-          <input type="text" id="destination-input" class="form-control" placeholder="Enter up to 25 letters." pattern="[a-zA-Z\s]{3,25}" required />
-        </div><!-- /.form-group -->
+          <input type="text" id="destination-input" class="form-control" placeholder="Enter up to 25 letters."required />
+        </div>
         <div class="form-group">
           <label for="time-input">First Train Time (HH:mm)</label>
-          <input type="text" id="time-input" class="form-control" placeholder="Enter military time, example 14:30." pattern="[0-9:]{5}" required />
-        </div><!-- /.form-group -->
+          <input type="text" id="time-input" class="form-control" placeholder="Enter in 24 hour time."  required />
+        </div>
         <div class="form-group">
           <label for="frequency-input">Frequency</label>
-          <input type="text" id="frequency-input" class="form-control" placeholder="Enter 2 digit for minutes." pattern="[0-9]{2}" required />
-        </div><!-- /.form-group -->
+          <input type="text" id="frequency-input" class="form-control" placeholder="2 digits in minutes."  required />
+        </div>
         <button type="submit" id="add-train-btn" class="btn btn-primary">Add Train</button>
     </form>
-</div><!-- /.panel-body -->
-</div><!-- /.panel panel-primary -->
-</div><!-- /.grid -->
+</div>
+</div>
+</div>
 
   </div>
 
-  <script>
-  var config = {
-    apiKey: "AIzaSyCfiZyPFjfif2llx6v0VwO_qI7yc0-ebR8",
-    authDomain: "traintimes-4e996.firebaseapp.com",
-    databaseURL: "https://traintimes-4e996.firebaseio.com",
-    projectId: "traintimes-4e996",
-    storageBucket: "traintimes-4e996.appspot.com",
-    messagingSenderId: "611159806062"
-  };
   
+<script src="https://www.gstatic.com/firebasejs/5.10.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB-rtM4iaTAK3TS5m7nuY_4HsxuW9mksUA",
+    authDomain: "database111-2eb99.firebaseapp.com",
+    databaseURL: "https://database111-2eb99.firebaseio.com",
+    projectId: "database111-2eb99",
+    storageBucket: "database111-2eb99.appspot.com",
+    messagingSenderId: "835912868805"
+  };
   firebase.initializeApp(config);
   
   var database = firebase.database();
   
-  //Button for adding Trains
 $( "#target" ).submit(function( event ) {
 
-  // Grabs user input
   var trainName = $("#train-input").val().trim();
   var destinationName = $("#destination-input").val().trim();
   var timeStart = moment($("#time-input").val().trim(), "HH:mm").format("X");
   var frequencyRate = $("#frequency-input").val().trim();
 
-  // Creates local "temporary" object for holding train data
   var newTrain = {
     name: trainName,
     destination: destinationName,
@@ -118,71 +117,56 @@ $( "#target" ).submit(function( event ) {
     frequency: frequencyRate
   };
 
-// Uploads train data to the database
 database.ref().push(newTrain);
 
-// Logs train data to console
 console.log(newTrain.name);
 console.log(newTrain.destination);
 console.log(newTrain.start);
 console.log(newTrain.frequency);
 
-// Alert
-alert("Train successfully added");
+alert("Train added");
 
-// Clears all of the text-boxes
 $("#train-input").val("");
 $("#destination-input").val("");
 $("#time-input").val("");
 $("#frequency-input").val("");
 
-// Determine when the next train arrives.
   return false;
 });
 
-//Firebase event for adding train to the database and a row in the html
 database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 
 console.log(childSnapshot.val());
 
-// Store train info into a variable.
 var trainName = childSnapshot.val().name;
 var destinationName = childSnapshot.val().destination;
 var timeStart = childSnapshot.val().start;
 var frequencyRate = childSnapshot.val().frequency;
 
-// Train Info
 console.log(trainName);
 console.log(destinationName);
 console.log(timeStart);
 console.log(frequencyRate);
 
-// First Time (pushed back 1 year to make sure it comes before current time)
   var firstTimeConverted = moment(timeStart, "HH:mm").subtract(1, "years");
   console.log(firstTimeConverted);
 
-  // Current Time
   var currentTime = moment();
   console.log("CURRENT TIME: " + moment(currentTime).format("HH:mm"));
 
-  // Difference between the times
   var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
   console.log("DIFFERENCE IN TIME: " + diffTime);
 
-  // Time apart (remainder)
   var tRemainder = diffTime % frequencyRate;
   console.log(tRemainder);
 
-   // Minute Until Train
   var tMinutesTillTrain = frequencyRate - tRemainder;
   console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
 
-  // Next Train
   var nextTrain = moment().add(tMinutesTillTrain, "minutes");
   console.log("ARRIVAL TIME: " + moment(nextTrain).format("HH:mm"));
   var formattedTime = moment(nextTrain).format("HH:mm");
 
-// Add each train's data into the table
 $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destinationName + "</td><td>" + frequencyRate + "</td><td>" + formattedTime + "</td><td>" + tMinutesTillTrain + "</td>");
 });
   </script>
